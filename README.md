@@ -28,11 +28,10 @@ I need experince in creating Web Application with Python. So I decided to go wit
 		- [x] Displaying tags in both views (question feed and question view).
 		- [ ] Some validation..?
 		- [x] Front end improvements.
-	- [x] Refactor
+	- [x] Refactor -> A strong necessity for wrapping the data in objects. Classes to be the main goal for M3.
 
-1. **Nice and working app, easily extensible (adding classes)** :simple_smile:
-	Need of wrapping the data in objects is obvious, classes should be added.
-	- [ ] Question class(id, title, text, answers=[...],tags=[...])
+1. **Nice and working app, easily extensible (adding classes)**
+	- [ ] class Question: `id, title, text, answers=[...],tags=[...]`
 	- [ ] Refactor the existing code to make it work with the Question object instead.
 	- [ ] ...
 	- [ ] ...
