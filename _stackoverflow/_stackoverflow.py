@@ -1,4 +1,4 @@
-import os, sqlite3
+import os, sqlite3, sys, unicodedata
 from flask import Flask, request, session, g, redirect, url_for, abort, \
      render_template, flash
 
@@ -55,42 +55,69 @@ def close_db(error):
 
 # Routing:
 @app.route('/')
-def list_questions():
+def feed():
+    return redirect(url_for('questions'))
+
+@app.route('/questions/')
+def questions():
     db = get_db()
-    #id is also added for debugging purposes
-    cur = db.execute('select title, text, id from questions order by id desc')
-    questions = cur.fetchall()
-    return render_template('list_questions.html', questions=questions)
+    q = db.execute('SELECT * FROM Question ORDER BY id DESC').fetchall()
+    questions = []
+
+    for eachQ in q:
+        questions.append({
+        'id': eachQ['id'],
+        'title': eachQ['title'],
+        'tags': db.execute('SELECT name FROM Tag WHERE id IN (SELECT tag_id FROM QuestionTag WHERE question_id = %d)' % eachQ['id']).fetchall()
+        })
+
+    return render_template('question_feed.html', questions=questions)
+
+#TBD: ask_question and add_question can be combined - by checking for query method - GET, POST
+@app.route('/questions/ask')
+def ask_question():
+    return render_template('ask_question.html')
 
 @app.route('/add_question', methods=['POST'])
 def add_question():
     # if not session.get('logged_in'):
     #     abort(401)
     db = get_db()
-    db.execute('insert into questions (title, text) values (?, ?)',
+    cursor = db.cursor()
+    
+    cursor.execute('INSERT INTO Question (title, text) VALUES (?, ?)',
                  [request.form['title'], request.form['text']])
+    question_id = cursor.lastrowid
+
+    tags_input = unicodedata.normalize('NFKD', request.form['tags']).encode('ascii','ignore')
+    tags = tags_input.split(" ")
+    for eachTag in tags:
+        # import pdb; pdb.set_trace()
+        try:
+            cursor.execute('INSERT INTO Tag (name) VALUES ("%s")' % (eachTag))
+            tag_id = cursor.lastrowid
+        except sqlite3.IntegrityError as e:
+            tag_id = cursor.execute('SELECT * FROM Tag WHERE name = "%s"' % eachTag).fetchone()['id']
+            print('SQLite Error: ', e.args, sys.exc_info())
+        cursor.execute('INSERT INTO QuestionTag (question_id, tag_id) VALUES ("%s", "%s")' % (question_id, tag_id))
+
     db.commit()
     flash('New question was successfully added.')
-    return redirect(url_for('list_questions'))
+    return redirect(url_for('questions'))
 
-@app.route('/questions/')
-def questions():
-    return redirect(url_for('list_questions'))
-
-@app.route('/questions/<int:qid>')
-def get_question(qid):
+@app.route('/questions/<int:question_id>')
+def get_question(question_id):
     db = get_db()
-    q = db.execute('select * from questions where id = %d' % qid)
-    question = q.fetchone()
-    a = db.execute('select text from answers where qid is %s' % qid)
-    answers = a.fetchall()
-    return render_template('show_question.html', question=question, answers=answers)
+    question = db.execute('SELECT * FROM Question WHERE id = %d' % question_id).fetchone()
+    answers = db.execute('SELECT * FROM Answer WHERE question_id = %d' % question_id).fetchall()
+    tags = db.execute('SELECT name FROM Tag WHERE id IN (SELECT tag_id FROM QuestionTag WHERE question_id = %d)' % question['id']).fetchall()
+    return render_template('show_question.html', question=question, answers=answers, tags=tags)
 
 @app.route('/add_answer', methods=['POST'])
 def add_answer():
     db = get_db()
-    qid = request.form['qid']
-    db.execute('insert into answers (text, qid) values (?, ?)', (request.form['text'], qid))
+    question_id = request.form['question_id']
+    db.execute('INSERT INTO Answer (text, question_id) VALUES (?, ?)', (request.form['text'], question_id))
     db.commit()
     flash('New answer was successfully added.')
-    return redirect(url_for('get_question', qid=qid))
+    return redirect(url_for('get_question', question_id=question_id))

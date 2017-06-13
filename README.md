@@ -13,20 +13,26 @@ I need experince in creating Web Application with Python. So I decided to go wit
 
 ## History (in Milestones)
 
-1. ** Working app, very basic functionality (Questions, Answers) **
+1. **Working app, very basic functionality (Questions, Answers)**
 	- [x] Working app with no Users at all.
 	- [x] DB with `Questions`, `Answers` (connected).
 	- [x] Question feed, newest on top.
 	- [x] Page serving question by # and showing its answers, adding new answer.
 	- [x] Links between the different pages, so it can be navigated.
 
-1. ** Still working app, wider functionality (adding Tags, Front end updates) **
-	- [ ] "Add question" -> show the form only if requested.
-	- [ ] Taggs functionality
-		- [ ] DB update with a new `Taggs` table.
-		- [ ] Adding tags for each question.
-		- [ ] Displaying taggs in both views (question feed and question view).
+1. **Still working app, wider functionality (adding Tags, Front end updates)**
+	- [x] "Add question" -> show the form only if requested.
+	- [ ] Tags functionality:
+		- [x] DB update with a new `Tags` table.
+		- [x] Adding tags for each question.
+		- [x] Displaying tags in both views (question feed and question view).
 		- [ ] Some validation..?
-		- [ ] Front end improvements of the already created parts.
+		- [x] Front end improvements.
+	- [x] Refactor
 
-1. ** M3 - to be defined after achieving M2 :simple_smile: **
+1. **Nice and working app, easily extensible (adding classes)** :simple_smile:
+	Need of wrapping the data in objects is obvious, classes should be added.
+	- [ ] Question class(id, title, text, answers=[...],tags=[...])
+	- [ ] Refactor the existing code to make it work with the Question object instead.
+	- [ ] ...
+	- [ ] ...

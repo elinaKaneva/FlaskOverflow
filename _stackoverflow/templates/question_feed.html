@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+
+{% block question_feed %}
+
+	<div class="mainbar">
+		<h1>FlaskOverflow</h1>
+
+		{% for message in get_flashed_messages() %}
+		  <div class=flash>{{ message }}</div>
+		{% endfor %}
+
+		<ul class=entries>
+		  {% for question in questions %}
+		    <li>
+		    	<h2><a href="/questions/{{ question.id }}"> {{ question.id }}. {{ question.title }}</h2></a>
+				Tags: 
+				{% for tag in question.tags %}
+					<a href="/">
+						{{ tag.name|safe }} 
+					</a>
+				{% endfor %}
+		    </li>
+		  {% else %}
+		    <li><em>Unbelievable! No questions so far..</em></li>
+		{% endfor %}
+		</ul>
+	</div>
+	<div class="sidebar">
+
+			<form action="{{ url_for('ask_question') }}">
+			    <input type="submit" value="Ask a Question" />
+			</form>
+	</div>
+
+{% endblock %}

@@ -1,25 +1,27 @@
-<!doctype html>
-<title>FlaskOverflow</title>
-<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+{% extends "layout.html" %}
 
-<div class=page>
-<h1><a href="/">←</a>
-	FlaskOverflow</h1>
-
-	<!-- login/logout stuff can be added in here -->
-
+{% block show_question %}
+	
 	{% for message in get_flashed_messages() %}
-		<div class=flash>{{ message }}</div>
+	  <div class=flash>{{ message }}</div>
 	{% endfor %}
 
-	<h2> {{ question.id }}. {{ question.title }}</h2>
-	{{ question.text|safe }}
+	<h1><a href="/">←</a> {{ question.title }}</h1>
+	<div class=question>
+		<h4>{{ question.text|safe }}</h4>
+		Tags: 
+		{% for tag in tags %}
+			<a href="/">
+				{{ tag.name|safe }} 
+			</a>
+		{% endfor %}
+	</div>
 
-	<ul class=entries>
+	<ul class=answer>
 		{% for answer in answers %}
 			<li>{{ answer.text|safe }}</li>
 		{% else %}
-			<li><em>No answers are added so far..</em></li>
+			<em>No answers so far..</em>
 		{% endfor %}
 
 		<!--   {% if session.logged_in %} -->
@@ -28,7 +30,7 @@
 				<dl>
 					<dt>Answer:
 					<dd><textarea name=text rows=5 cols=40></textarea>
-					<dd><input type="hidden" name="qid" value="{{ question.id }}">
+					<dd><input type="hidden" name="question_id" value="{{ question.id }}">
 					<dd><input type=submit value=Add>
 				</dl>
 			</form>
@@ -36,4 +38,4 @@
 		<!--   {% endif %} -->
 	</ul>
 
-</div>
+{% endblock %}

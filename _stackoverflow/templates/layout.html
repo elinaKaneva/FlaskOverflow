@@ -1,15 +1,31 @@
 <!doctype html>
-<title>FlaskOverflow</title>
-<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
-<div class=page>
-<h1>FlaskOverflow</h1>
 
-<!-- login/logout stuff can be added in here -->
+<head>
+	<title>FlaskOverflow</title>
+	<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+</head>
 
-{% for message in get_flashed_messages() %}
-  <div class=flash>{{ message }}</div>
-{% endfor %}
+<body>
+	<header>
+		<div class="container">
+			<nav>
+			  <a href="/">
+			  	<img src="{{ url_for('static', filename='logo.png') }}"></img>
+			  </a> |
+			  <a href="/questions/">Questions</a> |
+			  <a href="/tags/">Tags</a> |
+			  <a href="/users/">Users</a> |
+			  Search: <input type="Text" name="search">
+			</nav>
+		</div>
+		<!-- login/logout stuff can be added in here -->
+	</header>
 
-{% block body %}{% endblock %}
-
-</div>
+	<div class="container">
+		<div class="content">
+			{% block question_feed %}{% endblock %}
+			{% block show_question %}{% endblock %}
+			{% block ask_question %}{% endblock %}
+		</div>
+	</div> 	
+</body>
